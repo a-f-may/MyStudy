@@ -1,3 +1,3 @@
 # 問題リスト（3回目：2026-04-04）
 
-- [ ] 整数キャッシュ問題（`integer_cache_problems.md`）
+- [ ] 整数キャッシュ問題（`integer_cache_problems.html`）
