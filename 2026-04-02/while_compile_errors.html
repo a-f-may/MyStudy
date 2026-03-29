@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>while コンパイルエラーパターン（2回目）</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.7; }
+    h1 { border-bottom: 2px solid #333; padding-bottom: 8px; }
+    h2 { margin-top: 40px; }
+    pre { background: #f4f4f4; padding: 12px; border-radius: 6px; overflow-x: auto; }
+    code { background: #f4f4f4; padding: 2px 5px; border-radius: 4px; font-size: 0.95em; }
+    details { margin-top: 10px; border: 1px solid #ccc; border-radius: 6px; padding: 8px 12px; }
+    summary { cursor: pointer; font-weight: bold; color: #555; }
+    .point { background: #eef6ff; border-left: 4px solid #4a90d9; padding: 10px 16px; border-radius: 4px; }
+    .error { background: #fff0f0; border-left: 4px solid #d94a4a; padding: 10px 16px; border-radius: 4px; margin-top: 8px; }
+    hr { border: none; border-top: 1px solid #ddd; margin: 32px 0; }
+  </style>
+</head>
+<body>
+
+<h1>while コンパイルエラーパターン（2回目：2026-04-02）</h1>
+
+<div class="point">
+  <ul>
+    <li>ループ外の <code>break</code> / <code>continue</code> は <strong>SyntaxError</strong></li>
+    <li>コロン忘れ・インデント誤りも <strong>SyntaxError / IndentationError</strong></li>
+    <li>到達不可コードは Python ではエラーにならないが、論理バグになる</li>
+    <li>ループ変数が変化しない <code>while</code> は無限ループ</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2>Q1</h2>
+<p>このコードを実行するとどうなりますか？</p>
+<pre><code>x = 5
+break</code></pre>
+<details>
+  <summary>解答を見る</summary>
+  <div class="error"><strong>SyntaxError: 'break' outside loop</strong></div>
+  <p><code>break</code> はループの中でしか使えません。ループ外に書くと構文エラーになります。</p>
+</details>
+
+<hr>
+
+<h2>Q2</h2>
+<p>このコードを実行するとどうなりますか？</p>
+<pre><code>x = 5
+continue</code></pre>
+<details>
+  <summary>解答を見る</summary>
+  <div class="error"><strong>SyntaxError: 'continue' not properly in loop</strong></div>
+  <p><code>continue</code> も同様にループ外では使えません。</p>
+</details>
+
+<hr>
+
+<h2>Q3</h2>
+<p>このコードを実行するとどうなりますか？</p>
+<pre><code>x = 10
+while x > 0
+    x -= 1</code></pre>
+<details>
+  <summary>解答を見る</summary>
+  <div class="error"><strong>SyntaxError: expected ':'</strong></div>
+  <p><code>while</code> 文の条件式の末尾にはコロン <code>:</code> が必要です。</p>
+</details>
+
+<hr>
+
+<h2>Q4</h2>
+<p>このコードを実行するとどうなりますか？</p>
+<pre><code>while True:
+print("hello")</code></pre>
+<details>
+  <summary>解答を見る</summary>
+  <div class="error"><strong>IndentationError: expected an indented block</strong></div>
+  <p><code>while</code> ブロックの中身はインデントが必要です。</p>
+</details>
+
+<hr>
+
+<h2>Q5</h2>
+<p>このコードはエラーになりますか？なる場合は何のエラーですか？</p>
+<pre><code>while True:
+    print("hello")
+print("終了")</code></pre>
+<details>
+  <summary>解答を見る</summary>
+  <p><strong>構文エラーにはなりません。</strong>ただし <code>while True</code> は無限ループのため <code>print("終了")</code> には永遠に到達しません（到達不可コード）。Python はこれをエラーとして検出しません。</p>
+</details>
+
+<hr>
+
+<h2>Q6</h2>
+<p>このコードはエラーになりますか？なる場合は何のエラーですか？</p>
+<pre><code>while True:
+    break
+    print("ここは？")</code></pre>
+<details>
+  <summary>解答を見る</summary>
+  <p><strong>構文エラーにはなりません。</strong><code>break</code> の直後のコードは到達不可ですが、Python はエラーにしません。<code>print("ここは？")</code> は実行されません。</p>
+</details>
+
+<hr>
+
+<h2>Q7</h2>
+<p>このコードはエラーになりますか？なる場合は何のエラーですか？</p>
+<pre><code>x = 3
+while x > 0:
+    print(x)</code></pre>
+<details>
+  <summary>解答を見る</summary>
+  <p><strong>構文エラーにはなりませんが、無限ループです。</strong><code>x</code> の値がループ内で変化しないため、条件 <code>x > 0</code> が常に <code>True</code> になり続けます。</p>
+  <p>修正例：</p>
+  <pre><code>x = 3
+while x > 0:
+    print(x)
+    x -= 1</code></pre>
+</details>
+
+<hr>
+
+<h2>Q8（総合）</h2>
+<p>次の4つのコードについて、エラーの種類（SyntaxError / IndentationError / エラーなし）を答えてください。</p>
+<pre><code># (a)
+for i in range(3):
+    pass
+break
+
+# (b)
+while False:
+    print("hello")
+
+# (c)
+while True:
+        print("hello")
+
+# (d)
+x = 0
+while x &lt; 3:
+    x += 1
+continue</code></pre>
+<details>
+  <summary>解答を見る</summary>
+  <ul>
+    <li>(a) <strong>SyntaxError</strong> — <code>break</code> がループ外</li>
+    <li>(b) <strong>エラーなし</strong> — 条件が最初から <code>False</code> なのでループ本体は実行されないだけ</li>
+    <li>(c) <strong>IndentationError</strong> — インデントが一貫していない</li>
+    <li>(d) <strong>SyntaxError</strong> — <code>continue</code> がループ外</li>
+  </ul>
+</details>
+
+</body>
+</html>
