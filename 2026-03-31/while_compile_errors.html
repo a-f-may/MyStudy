@@ -13,144 +13,129 @@
     details { margin-top: 10px; border: 1px solid #ccc; border-radius: 6px; padding: 8px 12px; }
     summary { cursor: pointer; font-weight: bold; color: #555; }
     .point { background: #eef6ff; border-left: 4px solid #4a90d9; padding: 10px 16px; border-radius: 4px; }
-    .error { background: #fff0f0; border-left: 4px solid #d94a4a; padding: 10px 16px; border-radius: 4px; margin-top: 8px; }
+    .error { background: #fff0f0; border-left: 4px solid #d94a4a; padding: 8px 12px; border-radius: 4px; margin-top: 8px; }
+    .ok { background: #f0fff0; border-left: 4px solid #4ad94a; padding: 8px 12px; border-radius: 4px; margin-top: 8px; }
     hr { border: none; border-top: 1px solid #ddd; margin: 32px 0; }
   </style>
 </head>
 <body>
-
 <h1>while コンパイルエラーパターン（1回目：2026-03-31）</h1>
-
 <div class="point">
   <ul>
-    <li>ループ外の <code>break</code> / <code>continue</code> は <strong>SyntaxError</strong></li>
-    <li>コロン忘れ・インデント誤りも <strong>SyntaxError / IndentationError</strong></li>
-    <li>到達不可コードは Python ではエラーにならないが、論理バグになる</li>
-    <li>ループ変数が変化しない <code>while</code> は無限ループ</li>
+    <li><code>while(false)</code> のブロック内は到達不可 → <strong>コンパイルエラー</strong></li>
+    <li><code>break</code> / <code>return</code> / <code>throw</code> の後のコードは到達不可 → <strong>コンパイルエラー</strong></li>
+    <li>ループ外の <code>break</code> / <code>continue</code> → <strong>コンパイルエラー</strong></li>
+    <li><code>while(true)</code> の後のコードは到達不可 → <strong>コンパイルエラー</strong></li>
   </ul>
 </div>
-
 <hr>
-
 <h2>Q1</h2>
-<p>このコードを実行するとどうなりますか？</p>
-<pre><code>x = 5
-break</code></pre>
-<details>
-  <summary>解答を見る</summary>
-  <div class="error"><strong>SyntaxError: 'break' outside loop</strong></div>
-  <p><code>break</code> はループの中でしか使えません。ループ外に書くと構文エラーになります。</p>
+<p>このコードはコンパイルエラーになりますか？</p>
+<pre><code>public void test() {
+    while (false) {
+        System.out.println("hello");
+    }
+}</code></pre>
+<details><summary>解答を見る</summary>
+<div class="error"><strong>コンパイルエラー：unreachable statement</strong></div>
+<p><code>while(false)</code> の条件は常に <code>false</code> なので、ブロック内のコードは絶対に実行されません。Java はこれをコンパイル時に検出してエラーにします。</p>
 </details>
-
 <hr>
-
 <h2>Q2</h2>
-<p>このコードを実行するとどうなりますか？</p>
-<pre><code>x = 5
-continue</code></pre>
-<details>
-  <summary>解答を見る</summary>
-  <div class="error"><strong>SyntaxError: 'continue' not properly in loop</strong></div>
-  <p><code>continue</code> も同様にループ外では使えません。</p>
+<p>このコードはコンパイルエラーになりますか？</p>
+<pre><code>public void test() {
+    while (true) {
+        break;
+        System.out.println("ここは？");
+    }
+}</code></pre>
+<details><summary>解答を見る</summary>
+<div class="error"><strong>コンパイルエラー：unreachable statement</strong></div>
+<p><code>break</code> の後のコードは到達不可です。Java はこれをコンパイルエラーにします。</p>
 </details>
-
 <hr>
-
 <h2>Q3</h2>
-<p>このコードを実行するとどうなりますか？</p>
-<pre><code>x = 10
-while x > 0
-    x -= 1</code></pre>
-<details>
-  <summary>解答を見る</summary>
-  <div class="error"><strong>SyntaxError: expected ':'</strong></div>
-  <p><code>while</code> 文の条件式の末尾にはコロン <code>:</code> が必要です。</p>
+<p>このコードはコンパイルエラーになりますか？</p>
+<pre><code>public void test() {
+    int x = 5;
+    break;
+}</code></pre>
+<details><summary>解答を見る</summary>
+<div class="error"><strong>コンパイルエラー：break outside switch or loop</strong></div>
+<p><code>break</code> はループまたは <code>switch</code> の中でしか使えません。</p>
 </details>
-
 <hr>
-
 <h2>Q4</h2>
-<p>このコードを実行するとどうなりますか？</p>
-<pre><code>while True:
-print("hello")</code></pre>
-<details>
-  <summary>解答を見る</summary>
-  <div class="error"><strong>IndentationError: expected an indented block</strong></div>
-  <p><code>while</code> ブロックの中身はインデントが必要です。</p>
+<p>このコードはコンパイルエラーになりますか？</p>
+<pre><code>public void test() {
+    while (true) {
+        return;
+    }
+    System.out.println("終了");
+}</code></pre>
+<details><summary>解答を見る</summary>
+<div class="error"><strong>コンパイルエラー：unreachable statement</strong></div>
+<p><code>while(true)</code> からは抜け出せない（<code>return</code> でメソッド終了）ため、その後のコードは到達不可です。</p>
 </details>
-
 <hr>
-
 <h2>Q5</h2>
-<p>このコードはエラーになりますか？なる場合は何のエラーですか？</p>
-<pre><code>while True:
-    print("hello")
-print("終了")</code></pre>
-<details>
-  <summary>解答を見る</summary>
-  <p><strong>構文エラーにはなりません。</strong>ただし <code>while True</code> は無限ループのため <code>print("終了")</code> には永遠に到達しません（到達不可コード）。Python はこれをエラーとして検出しません。</p>
+<p>このコードはコンパイルエラーになりますか？</p>
+<pre><code>public int getValue() {
+    while (true) {
+        // 何もしない
+    }
+}</code></pre>
+<details><summary>解答を見る</summary>
+<div class="ok"><strong>コンパイルエラーにならない</strong></div>
+<p>Java は <code>while(true)</code> が絶対に終了しないことを認識しているため、<code>return</code> 文がなくてもコンパイルエラーにはなりません。</p>
 </details>
-
 <hr>
-
 <h2>Q6</h2>
-<p>このコードはエラーになりますか？なる場合は何のエラーですか？</p>
-<pre><code>while True:
-    break
-    print("ここは？")</code></pre>
-<details>
-  <summary>解答を見る</summary>
-  <p><strong>構文エラーにはなりません。</strong><code>break</code> の直後のコードは到達不可ですが、Python はエラーにしません。<code>print("ここは？")</code> は実行されません。</p>
+<p>このコードはコンパイルエラーになりますか？</p>
+<pre><code>public void test() {
+    int x = 5;
+    continue;
+}</code></pre>
+<details><summary>解答を見る</summary>
+<div class="error"><strong>コンパイルエラー：continue outside of loop</strong></div>
+<p><code>continue</code> はループの中でしか使えません。</p>
 </details>
-
 <hr>
-
 <h2>Q7</h2>
-<p>このコードはエラーになりますか？なる場合は何のエラーですか？</p>
-<pre><code>x = 3
-while x > 0:
-    print(x)</code></pre>
-<details>
-  <summary>解答を見る</summary>
-  <p><strong>構文エラーにはなりませんが、無限ループです。</strong><code>x</code> の値がループ内で変化しないため、条件 <code>x > 0</code> が常に <code>True</code> になり続けます。</p>
-  <p>修正例：</p>
-  <pre><code>x = 3
-while x > 0:
-    print(x)
-    x -= 1  # ← 変数を変化させる</code></pre>
+<p>このコードはコンパイルエラーになりますか？</p>
+<pre><code>public void test() {
+    while (true) {
+        throw new RuntimeException();
+    }
+    System.out.println("終了");
+}</code></pre>
+<details><summary>解答を見る</summary>
+<div class="error"><strong>コンパイルエラー：unreachable statement</strong></div>
+<p><code>while(true)</code> 内で必ず <code>throw</code> されるため、ループの後のコードは到達不可です。</p>
 </details>
-
 <hr>
-
 <h2>Q8（総合）</h2>
-<p>次の4つのコードについて、エラーの種類（SyntaxError / IndentationError / エラーなし）を答えてください。</p>
-<pre><code># (a)
-for i in range(3):
-    pass
-break
+<p>次の (a)〜(d) について、コンパイルエラーになるか答えてください。</p>
+<pre><code>// (a)
+while (false) { int x = 0; }
 
-# (b)
-while False:
-    print("hello")
+// (b)
+while (true) { break; int x = 0; }
 
-# (c)
-while True:
-        print("hello")  # インデント過剰
+// (c)
+while (true) { }
+int x = 0;
 
-# (d)
-x = 0
-while x &lt; 3:
-    x += 1
-continue</code></pre>
-<details>
-  <summary>解答を見る</summary>
-  <ul>
-    <li>(a) <strong>SyntaxError</strong> — <code>break</code> がループ外</li>
-    <li>(b) <strong>エラーなし</strong> — 条件が最初から <code>False</code> なのでループ本体は実行されないだけ</li>
-    <li>(c) <strong>IndentationError</strong> — インデントが一貫していない（過剰なインデントもエラーになる場合がある）</li>
-    <li>(d) <strong>SyntaxError</strong> — <code>continue</code> がループ外</li>
-  </ul>
+// (d)
+while (true) { return; }
+int x = 0;</code></pre>
+<details><summary>解答を見る</summary>
+<ul>
+  <li>(a) <strong>コンパイルエラー</strong> — <code>while(false)</code> のブロック内は到達不可</li>
+  <li>(b) <strong>コンパイルエラー</strong> — <code>break</code> の後の <code>int x = 0</code> は到達不可</li>
+  <li>(c) <strong>コンパイルエラー</strong> — <code>while(true)</code> の後のコードは到達不可</li>
+  <li>(d) <strong>コンパイルエラー</strong> — <code>while(true) { return; }</code> の後は到達不可</li>
+</ul>
 </details>
-
 </body>
 </html>

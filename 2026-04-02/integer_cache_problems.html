@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>整数キャッシュ範囲 確認問題（2回目）</title>
+  <title>Integer キャッシュ範囲 確認問題（2回目）</title>
   <style>
     body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.7; }
     h1 { border-bottom: 2px solid #333; padding-bottom: 8px; }
@@ -17,123 +17,97 @@
   </style>
 </head>
 <body>
-
-<h1>整数キャッシュ範囲 理解度確認問題（2回目：2026-04-02）</h1>
-
+<h1>Integer キャッシュ範囲 確認問題（2回目：2026-04-02）</h1>
 <div class="point">
   <ul>
-    <li>Pythonは <code>-5</code> 〜 <code>256</code> の整数をキャッシュしている</li>
-    <li><code>==</code> は<strong>値</strong>の比較、<code>is</code> は<strong>同一オブジェクト</strong>かの比較</li>
-    <li>整数の値比較には必ず <code>==</code> を使うこと</li>
+    <li>Java の Integer キャッシュ範囲は <code>-128</code> 〜 <code>127</code></li>
+    <li><code>==</code> はオブジェクトの参照比較、値比較には <code>.equals()</code> を使う</li>
+    <li><code>new Integer()</code> は常に新しいオブジェクトを生成する</li>
   </ul>
 </div>
-
 <hr>
-
 <h2>Q1</h2>
 <p>次のコードの出力を答えてください。</p>
-<pre><code>a = 100
-b = 100
-print(a is b)
-print(a == b)</code></pre>
-<details>
-  <summary>解答を見る</summary>
-  <pre><code>True
-True</code></pre>
-  <p><code>100</code> はキャッシュ範囲内なので <code>a</code> と <code>b</code> は同じオブジェクト。どちらも <code>True</code>。</p>
+<pre><code>Integer a = 100;
+Integer b = 100;
+System.out.println(a == b);
+System.out.println(a.equals(b));</code></pre>
+<details><summary>解答を見る</summary>
+<pre><code>true
+true</code></pre>
+<p><code>100</code> はキャッシュ範囲内なので <code>a</code> と <code>b</code> は同じオブジェクト。<code>==</code> も <code>equals()</code> も <code>true</code>。</p>
 </details>
-
 <hr>
-
 <h2>Q2</h2>
 <p>次のコードの出力を答えてください。</p>
-<pre><code>a = 257
-b = 257
-print(a is b)
-print(a == b)</code></pre>
-<details>
-  <summary>解答を見る</summary>
-  <pre><code>False
-True</code></pre>
-  <p><code>257</code> はキャッシュ範囲外。値は等しいが別オブジェクトなので <code>is</code> は <code>False</code>、<code>==</code> は <code>True</code>。</p>
+<pre><code>Integer a = 128;
+Integer b = 128;
+System.out.println(a == b);
+System.out.println(a.equals(b));</code></pre>
+<details><summary>解答を見る</summary>
+<pre><code>false
+true</code></pre>
+<p><code>128</code> はキャッシュ範囲外なので別オブジェクト。<code>==</code> は <code>false</code>、値は等しいので <code>equals()</code> は <code>true</code>。</p>
 </details>
-
 <hr>
-
 <h2>Q3</h2>
 <p>次のコードの出力を答えてください。</p>
-<pre><code>print(-5 is -5)
-print(-6 is -6)
-print(256 is 256)
-print(257 is 257)</code></pre>
-<details>
-  <summary>解答を見る</summary>
-  <pre><code>True
-False
-True
-False</code></pre>
-  <p><code>-5</code> と <code>256</code> はキャッシュ範囲の境界値。<code>-6</code> と <code>257</code> は範囲外。</p>
+<pre><code>Integer a = -128;
+Integer b = -128;
+System.out.println(a == b);
+
+Integer x = -129;
+Integer y = -129;
+System.out.println(x == y);</code></pre>
+<details><summary>解答を見る</summary>
+<pre><code>true
+false</code></pre>
+<p><code>-128</code> はキャッシュ範囲の下限なので <code>true</code>。<code>-129</code> は範囲外なので <code>false</code>。</p>
 </details>
-
 <hr>
-
 <h2>Q4</h2>
 <p>次のコードの出力を答えてください。</p>
-<pre><code>def double(n):
-    return n * 2
-
-a = double(100)
-b = double(100)
-print(a is b)   # 200
-
-x = double(150)
-y = double(150)
-print(x is y)   # 300</code></pre>
-<details>
-  <summary>解答を見る</summary>
-  <pre><code>True
-False</code></pre>
-  <p><code>200</code> はキャッシュ範囲内 → <code>True</code>。<code>300</code> はキャッシュ範囲外 → <code>False</code>。関数の戻り値でもキャッシュ機構は変わらない。</p>
+<pre><code>Integer a = new Integer(100);
+Integer b = new Integer(100);
+System.out.println(a == b);
+System.out.println(a.equals(b));</code></pre>
+<details><summary>解答を見る</summary>
+<pre><code>false
+true</code></pre>
+<p><code>new Integer()</code> は常に新しいオブジェクトを生成するため、キャッシュ範囲内でも <code>==</code> は <code>false</code>。</p>
 </details>
-
 <hr>
-
 <h2>Q5</h2>
-<p>次のコードにはバグがあります。何が問題で、どう直しますか？</p>
-<pre><code>def is_adult(age):
-    if age is 18:
-        return "ちょうど18歳"
-    return "18歳ではない"
-
-print(is_adult(18))</code></pre>
-<details>
-  <summary>解答を見る</summary>
-  <p><strong>問題：</strong> <code>is</code> で整数の値を比較している。</p>
-  <p><strong>修正：</strong></p>
-  <pre><code>def is_adult(age):
-    if age == 18:   # is → ==
-        return "ちょうど18歳"
-    return "18歳ではない"</code></pre>
-  <p><strong>教訓：</strong> 整数の値比較には必ず <code>==</code> を使う。<code>is</code> はオブジェクト同一性チェック専用。</p>
+<p>次のコードの出力を答えてください。</p>
+<pre><code>Integer a = 127;
+Integer b = 127;
+Integer c = 128;
+Integer d = 128;
+System.out.println(a == b);
+System.out.println(c == d);
+System.out.println(a.equals(b));
+System.out.println(c.equals(d));</code></pre>
+<details><summary>解答を見る</summary>
+<pre><code>true
+false
+true
+true</code></pre>
+<p><code>127</code> はキャッシュ上限なので <code>==</code> は <code>true</code>。<code>128</code> は範囲外なので <code>==</code> は <code>false</code>。<code>equals()</code> は常に値比較なので両方 <code>true</code>。</p>
 </details>
-
 <hr>
-
 <h2>Q6（総合）</h2>
 <p>空欄を埋めてください。</p>
 <ul>
-  <li>Pythonの整数キャッシュ範囲は <code>___</code> 〜 <code>___</code></li>
-  <li><code>a is b</code> は <code>id(a) ___ id(b)</code> と等価</li>
-  <li>整数の値を比較するときは <code>___</code> 演算子を使うべき</li>
+  <li>Java の Integer キャッシュ範囲は <code>___</code> 〜 <code>___</code></li>
+  <li><code>new Integer(100) == new Integer(100)</code> の結果は <code>___</code></li>
+  <li>Integer の値比較には <code>___</code> メソッドを使うべき</li>
 </ul>
-<details>
-  <summary>解答を見る</summary>
-  <ul>
-    <li><code>-5</code> 〜 <code>256</code></li>
-    <li><code>id(a) == id(b)</code> と等価</li>
-    <li><code>==</code> 演算子を使うべき</li>
-  </ul>
+<details><summary>解答を見る</summary>
+<ul>
+  <li><code>-128</code> 〜 <code>127</code></li>
+  <li><code>false</code>（常に新しいオブジェクト）</li>
+  <li><code>.equals()</code></li>
+</ul>
 </details>
-
 </body>
 </html>
