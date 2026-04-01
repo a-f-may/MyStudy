@@ -8,13 +8,14 @@
 
 - 日付フォルダがなければ作成する。日付は「今日から 2日後、4日後、6日後」の3つ。
 - 問題はQuestionフォルダに作成
-- 対象の日付のチェックリストに、Questionフォルダに作成した問題をする。
+- 対象の日付のチェックリストに、Questionフォルダに作成した問題のリンクを記載する。
 
 ```
 {YYYY-MM-DD}/
-  {topic_name}.html   ← 問題ファイル（HTML）
-  problems.py         ← 実行して確認できるPythonファイル
   checklist.md        ← 問題リスト
+Question/
+  {QuestionName}.html
+
 ```
 
 ---
@@ -25,6 +26,7 @@
 - ファイル名はトピックを表す名前（例：`integer_cache_problems.html`）。
 - 解答は `<details>` タグで折りたたみにする。
 - Questionフォルダに入れる
+- かっこよく作る
 
 ---
 
@@ -67,3 +69,8 @@ https://a-f-may.github.io/MyStudy/Question/{topic_name}.html
 
 - ブランチに push する。
 - GitHub Pages は `https://a-f-may.github.io/MyStudy/` で公開される。
+
+## 7.問題をチェックリストに追加依頼
+チェックリストに追加してといったら　２、４、６日後のチェックリストに追加して~ん
+問題は作らなくていいから、こっちが指定した文字列のままチェックリストだけ更新して～ん
+Googleカレンダーにもチェックリストのリンクを無ければ追加して～ん
